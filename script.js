@@ -23,8 +23,12 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Auth Elements
     const loginForm = document.getElementById('login-form');
+    const googleBtnTrigger = document.getElementById('google-btn-trigger');
+    const googlePopupOverlay = document.getElementById('google-auth-container');
+    const googleAccountItems = document.querySelectorAll('.google-account-item');
     const logoutBtn = document.getElementById('logout-btn');
     const displayName = document.getElementById('display-name');
+    const historyList = document.getElementById('history-list');
 
     // Dashboard Elements
     const assetCards = document.querySelectorAll('.asset-card');
@@ -68,24 +72,46 @@ document.addEventListener('DOMContentLoaded', () => {
     updateTrialUI();
 
     // --- Auth Handlers ---
-    loginForm.addEventListener('submit', (e) => {
-        e.preventDefault();
+    googleBtnTrigger.addEventListener('click', () => {
         const policy = document.getElementById('policy-agg').checked;
-        
         if (!policy) {
             alert('Please accept the Privacy Policy to continue with Google.');
             return;
         }
+        // Show Google Account Selector
+        googlePopupOverlay.classList.remove('hidden');
+    });
 
-        // Simulate Google Auth
-        const simulatedGoogleUser = 'YASSINE BOUMESHOULE'; // Automatically assigned via Google simulation
-        state.isLoggedIn = true;
-        state.user = simulatedGoogleUser;
-        
-        // Comprehensive Save
-        saveState();
-        
-        showApp();
+    googleAccountItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const selectedUser = item.dataset.user;
+            
+            // Simulation: Animate the process
+            item.style.background = '#e8f0fe';
+            
+            setTimeout(() => {
+                state.isLoggedIn = true;
+                state.user = selectedUser === 'Guest Account' ? 'Guest User' : 'Yassine B.';
+                
+                // Final Redirection
+                googlePopupOverlay.classList.add('hidden');
+                saveState();
+                showApp();
+            }, 600);
+        });
+    });
+
+    // Close popup if clicking overlay backdrop
+    googlePopupOverlay.addEventListener('click', (e) => {
+        if (e.target === googlePopupOverlay) {
+            googlePopupOverlay.classList.add('hidden');
+        }
+    });
+
+    loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        // The button is type=button, but if enter is pressed:
+        googleBtnTrigger.click();
     });
 
     logoutBtn.addEventListener('click', () => {

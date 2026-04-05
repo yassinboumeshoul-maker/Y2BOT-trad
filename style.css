@@ -152,6 +152,117 @@
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
+/* Google Popup Simulation */
+.google-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.google-popup {
+    background: #ffffff;
+    width: 100%;
+    max-width: 380px;
+    border-radius: 8px;
+    box-shadow: 0 24px 38px 3px rgba(0,0,0,0.14), 0 9px 46px 8px rgba(0,0,0,0.12), 0 11px 15px -7px rgba(0,0,0,0.2);
+    overflow: hidden;
+    color: #3c4043;
+    animation: googlePop 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes googlePop {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.google-popup-header {
+    padding: 32px 32px 16px;
+    text-align: center;
+}
+
+.google-popup-header svg {
+    margin-bottom: 12px;
+}
+
+.google-popup-header h3 {
+    font-size: 24px;
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.google-popup-header p {
+    font-size: 16px;
+    color: #3c4043;
+}
+
+.google-accounts-list {
+    margin: 16px 0;
+}
+
+.google-account-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 32px;
+    cursor: pointer;
+    transition: background 0.2s;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.google-account-item:first-child {
+    border-top: 1px solid #e0e0e0;
+}
+
+.google-account-item:hover {
+    background: #f8f9fa;
+}
+
+.google-avatar {
+    width: 32px;
+    height: 32px;
+    background: #4285F4;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    margin-right: 12px;
+}
+
+.google-avatar.guest {
+    background: #f1f3f4;
+    color: #5f6368;
+}
+
+.google-user-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.g-name {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.g-email {
+    font-size: 12px;
+    color: #70757a;
+}
+
+.google-popup-footer {
+    padding: 16px 32px 32px;
+    font-size: 12px;
+    color: #70757a;
+    line-height: 1.4;
+}
+
 .logout-btn {
     background: none;
     border: none;
