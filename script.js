@@ -61,8 +61,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const indContainer = document.querySelector('.indicator-items');
     const sumBuy = document.getElementById('sum-buy');
     const sumSell = document.getElementById('sum-sell');
+    const localWarning = document.getElementById('local-server-warning');
 
     // --- Initialization ---
+    // Check if running on file:// protocol
+    if (window.location.protocol === 'file:') {
+        localWarning.classList.remove('hidden');
+    }
+
     if (state.isLoggedIn) {
         showApp();
     } else {
@@ -71,48 +77,46 @@ document.addEventListener('DOMContentLoaded', () => {
     renderHistory();
     updateTrialUI();
 
-    // --- Auth Handlers ---
-    googleBtnTrigger.addEventListener('click', () => {
+    // --- Auth Handlers (Real Google Identity Services) ---
+    window.handleCredentialResponse = (response) => {
         const policy = document.getElementById('policy-agg').checked;
         if (!policy) {
-            alert('Please accept the Privacy Policy to continue with Google.');
+            alert('Please accept the Privacy Policy before signing in.');
+            // Note: In real GSI, the button is usually rendered before the checkbox check.
+            // But we can check it here.
             return;
         }
-        // Show Google Account Selector
-        googlePopupOverlay.classList.remove('hidden');
-    });
 
-    googleAccountItems.forEach(item => {
-        item.addEventListener('click', () => {
-            const selectedUser = item.dataset.user;
-            
-            // Simulation: Animate the process
-            item.style.background = '#e8f0fe';
-            
-            setTimeout(() => {
-                state.isLoggedIn = true;
-                state.user = selectedUser === 'Guest Account' ? 'Guest User' : 'Yassine B.';
-                
-                // Final Redirection
-                googlePopupOverlay.classList.add('hidden');
-                saveState();
-                showApp();
-            }, 600);
-        });
-    });
+        // Decode JWT (Frontend-only)
+        const jwt = response.credential;
+        const user = decodeJwt(jwt);
 
-    // Close popup if clicking overlay backdrop
-    googlePopupOverlay.addEventListener('click', (e) => {
-        if (e.target === googlePopupOverlay) {
-            googlePopupOverlay.classList.add('hidden');
+        if (user) {
+            state.isLoggedIn = true;
+            state.user = user.name;
+            saveState();
+            showApp();
         }
-    });
+    };
 
-    loginForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        // The button is type=button, but if enter is pressed:
-        googleBtnTrigger.click();
-    });
+    function decodeJwt(token) {
+        try {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            return JSON.parse(jsonPayload);
+        } catch (e) {
+            console.error("JWT Decode Error:", e);
+            return null;
+        }
+    }
+
+    // Hide the old simulated popup logic (keeping it harmlessly if elements exist)
+    if (googlePopupOverlay) {
+        googlePopupOverlay.classList.add('hidden');
+    }
 
     logoutBtn.addEventListener('click', () => {
         state.isLoggedIn = false;
